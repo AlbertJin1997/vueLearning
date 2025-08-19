@@ -9,7 +9,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "ant-design-vue": "^4.2.6",
     "pinia": "^3.0.3",
+    "plyr": "^3.7.8",
     "vue": "^3.3.4",
     "vue-router": "^4.5.1"
   },

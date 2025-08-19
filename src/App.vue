@@ -15,6 +15,7 @@ import { ref } from 'vue'
         <router-link to="/lifecycle">生命周期</router-link>
         <router-link to="/directive">自定义指令</router-link>
         <router-link to="/dynamic-component">动态组件</router-link>
+        <router-link to="/plyr">Plyr演示</router-link>
       </nav>
     </header>
     <main>

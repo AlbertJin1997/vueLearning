@@ -7,6 +7,7 @@ import PiniaView from '../views/PiniaView.vue'
 import LifecycleView from '../views/LifecycleView.vue'
 import DirectiveView from '../views/DirectiveView.vue'
 import DynamicComponentView from '../views/DynamicComponentView.vue'
+import PlyrView from '../views/PlyrView.vue'
 
 const routes = [
   { path: '/', name: 'home', component: HomeView },
@@ -16,7 +17,8 @@ const routes = [
   { path: '/pinia', name: 'pinia', component: PiniaView },
   { path: '/lifecycle', name: 'lifecycle', component: LifecycleView },
   { path: '/directive', name: 'directive', component: DirectiveView },
-  { path: '/dynamic-component', name: 'dynamic-component', component: DynamicComponentView }
+  { path: '/dynamic-component', name: 'dynamic-component', component: DynamicComponentView },
+  { path: '/plyr', name: 'plyr', component: PlyrView }
 ]
 
 const router = createRouter({
