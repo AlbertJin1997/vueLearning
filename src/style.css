@@ -6,6 +6,8 @@
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
   background-color: #242424;
+  --plyr-color-main: #f18f35;
+  --plyr-font-size-menu: 10px;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -14,11 +16,50 @@
   -webkit-text-size-adjust: 100%;
 }
 
+p
+
+/* 旋转静音/音量按钮90度 */
+/* 匹配实际类名：.plyr__control 和 .plyr__control--pressed，以及 data-plyr="mute" */
+.plyr__control.plyr__control--pressed[data-plyr="mute"] {
+  transform: rotate(0deg);
+  /* 旋转90度 */
+  /* 补充必要样式，确保旋转后显示正常 */
+  display: inline-block;
+  /* 确保旋转生效（inline元素可能不支持transform） */
+  transform-origin: center;
+  /* 以中心为旋转原点 */
+}
+
+.plyr__controls__item.plyr__volume {
+  /* 核心：旋转90度（-90度为向上，90度为向下） */
+  transform: rotate(-90deg);
+  /* 设置旋转原点为左上角 */
+  transform-origin: 0 0;
+
+  /* 调整宽度和高度以匹配旋转后的视觉尺寸 */
+  width: 30px;
+  /* 旋转后视觉上的高度 */
+  height: 30px;
+  /* 旋转后视觉上的宽度 */
+
+  /* 调整位置 */
+  left: 0;
+  top: 30px;
+  /* 将旋转后的控件向上移动其宽度的距离 */
+
+  /* 解决flex布局中宽度不变的问题 */
+  /* 1. 可以使用绝对定位脱离文档流 */
+  position: relative;
+  /* 2. 或者设置flex-shrink: 0防止收缩 */
+  flex-shrink: 0;
+}
+
 a {
   font-weight: 500;
   color: #646cff;
   text-decoration: inherit;
 }
+
 a:hover {
   color: #535bf2;
 }
@@ -28,6 +69,7 @@ a {
   color: #646cff;
   text-decoration: inherit;
 }
+
 a:hover {
   color: #535bf2;
 }
@@ -56,9 +98,11 @@ button {
   cursor: pointer;
   transition: border-color 0.25s;
 }
+
 button:hover {
   border-color: #646cff;
 }
+
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
@@ -66,6 +110,65 @@ button:focus-visible {
 
 .card {
   padding: 2em;
+}
+
+.plyr__menu__container [role=menu] {
+  padding: 1px !important;
+}
+
+/* 音量滑块样式 */
+input.volume-slider {
+  /* 基础样式 */
+  -webkit-appearance: none;
+  appearance: none;
+  width: 80px;
+  height: 6px;
+  background: #ddd;
+  outline: none;
+  border-radius: 3px;
+  margin: 0;
+  padding: 0;
+  transform-origin: left center;
+}
+
+/* WebKit浏览器（Chrome、Safari、Edge）的滑块样式 */
+input.volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #f18f35;
+  cursor: pointer;
+  transition: background 0.15s ease-in-out;
+}
+
+input.volume-slider::-webkit-slider-thumb:hover {
+  background: #d17a2c;
+}
+
+/* Firefox的滑块样式 */
+input.volume-slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border: 0;
+  border-radius: 50%;
+  background: #f18f35;
+  cursor: pointer;
+  transition: background 0.15s ease-in-out;
+}
+
+input.volume-slider::-moz-range-thumb:hover {
+  background: #d17a2c;
+}
+
+/* Firefox的轨道样式 */
+input.volume-slider::-moz-range-track {
+  width: 100%;
+  height: 6px;
+  cursor: pointer;
+  background: #ddd;
+  border-radius: 3px;
 }
 
 #app {
@@ -80,10 +183,67 @@ button:focus-visible {
     color: #213547;
     background-color: #ffffff;
   }
+
   a:hover {
     color: #747bff;
   }
+
   button {
     background-color: #f9f9f9;
   }
+}
+
+/* 垂直音量滑块轨道样式 */
+.volume-slider {
+  /* 基础样式（非轨道相关）可通过CSS定义，也可保留JS中的style设置 */
+  background-color: red;
+}
+
+/* WebKit浏览器（Chrome、Safari、Edge）的轨道样式 */
+.volume-slider::-webkit-slider-runnable-track {
+  background-color: red;
+  /* 轨道颜色设为红色 */
+  height: 6px;
+  /* 轨道高度 */
+  border-radius: 3px;
+  /* 轨道圆角，更美观 */
+}
+
+/* Firefox浏览器的轨道样式 */
+.volume-slider::-moz-range-track {
+  background-color: red;
+  /* 轨道颜色设为红色 */
+  height: 6px;
+  border-radius: 3px;
+  border: none;
+  /* 移除Firefox默认的轨道边框 */
+}
+
+/* 滑块（thumb）样式（可选，与轨道颜色协调） */
+.volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  /* 移除默认样式 */
+  width: 16px;
+  /* 滑块宽度 */
+  height: 16px;
+  /* 滑块高度 */
+  border-radius: 50%;
+  /* 圆形滑块 */
+  background: white;
+  /* 滑块底色 */
+  border: 2px solid red;
+  /* 滑块边框与轨道同色 */
+  cursor: pointer;
+  /* 鼠标悬停时显示指针 */
+  margin-top: -5px;
+  /* 调整滑块位置（配合轨道高度居中） */
+}
+
+.volume-slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: white;
+  border: 2px solid red;
+  cursor: pointer;
 }

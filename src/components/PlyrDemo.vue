@@ -95,11 +95,12 @@ const initPlayerInstances = (tabKey) => {
             autoplay: false,
             controls: [
               'play-large',
-              'play',
-              'progress',
               'current-time',
+              'progress',
+              'mute',
+              'volume',
               'settings',
-              'fullscreen'
+              'fullscreen',
             ],
             tooltips: { seek: true },
             previewThumbnails: { enabled: true, src: '/public/thumbnails.vtt' },
@@ -108,7 +109,34 @@ const initPlayerInstances = (tabKey) => {
 
           // 创建VideoPlayer实例
           playerInstances.value[tabKey][index] = new VideoPlayer(videoEl, options);
-          playerInstances.value[tabKey][index].init().catch(err => {
+          playerInstances.value[tabKey][index].init().then((player) => {
+            //获取静音按钮
+
+            const muteButton = player.elements.buttons.mute;
+            muteButton.style.transform = 'rotate(90deg)';
+            const volumeSlideBar = player.elements.inputs.volume;
+            volumeSlideBar.style.display = 'none';
+            console.log(volumeSlideBar)
+            //确保静音按钮有相对定位
+            const newButton = muteButton.cloneNode(true); // 克隆按钮（不包含事件监听器）
+            muteButton.parentNode.replaceChild(newButton, muteButton);
+
+            // （可选）为新按钮添加自定义点击逻辑
+            newButton.addEventListener('click', (e) => {
+              e.preventDefault();
+              volumeSlideBar.style.display = volumeSlideBar.style.display === 'none' ? 'block' : 'none'
+
+            });
+
+            //拦截静音按钮点击事件
+            muteButton.addEventListener('click', (e) => {
+
+              e.stopPropagation();
+
+            });
+
+            console.log('Player initialized successfully', muteButton);
+          }).catch(err => {
             console.error('Failed to initialize player:', err);
           });
         }

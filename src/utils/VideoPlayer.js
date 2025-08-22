@@ -19,6 +19,11 @@ export class VideoPlayer {
         update: false,
         language: 'auto'
       },
+      invertTime: false,
+      Storage: {
+        enabled: true,
+        Key: 'jpf'
+      },
       i18n: {
         restart: '重播',
         play: '播放',
@@ -39,8 +44,8 @@ export class VideoPlayer {
       tooltips: { seek: true },
       iconUrl: './src/assets/plyr.svg',
       previewThumbnails: {
-          enabled: true, 
-          src: '/thumbnails.vtt'
+        enabled: true,
+        src: '/thumbnails.vtt'
       },
       ...options
     };
