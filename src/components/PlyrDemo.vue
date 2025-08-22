@@ -5,12 +5,7 @@
       <TabPane key="tab1" tab="视频列表1">
         <div class="video-grid">
           <div v-for="(video, index) in videoLists.tab1" :key="index" class="video-item">
-            <video
-              :ref="el => setVideoRef('tab1', index, el)"
-              class="plyr__video-player"
-              controls
-              preload="none"
-            >
+            <video :ref="el => setVideoRef('tab1', index, el)" class="plyr__video-player" controls preload="none">
               <source :src="video.src" :type="video.type" />
             </video>
           </div>
@@ -19,12 +14,7 @@
       <TabPane key="tab2" tab="视频列表2">
         <div class="video-grid">
           <div v-for="(video, index) in videoLists.tab2" :key="index" class="video-item">
-            <video
-              :ref="el => setVideoRef('tab2', index, el)"
-              class="plyr__video-player"
-              controls
-              preload="none"
-            >
+            <video :ref="el => setVideoRef('tab2', index, el)" class="plyr__video-player" controls preload="none">
               <source :src="video.src" :type="video.type" />
             </video>
           </div>
@@ -33,19 +23,16 @@
       <TabPane key="tab3" tab="视频列表3">
         <div class="video-grid">
           <div v-for="(video, index) in videoLists.tab3" :key="index" class="video-item">
-            <video
-              :ref="el => setVideoRef('tab3', index, el)"
-              class="plyr__video-player"
-              controls
-              preload="none"
-            >
+            <video :ref="el => setVideoRef('tab3', index, el)" class="plyr__video-player" controls preload="none">
               <source :src="video.src" :type="video.type" />
             </video>
           </div>
         </div>
       </TabPane>
     </Tabs>
-    <p class="note">注意：请将视频文件命名为sample1.mp4至sample27.mp4并放在public目录下，每个标签页需要9个视频文件。悬停进度条预览功能需要提供缩略图VTT文件，您可以将thumbnails.vtt文件放在public目录下，或者使用在线VTT文件URL替换配置中的路径。</p>
+    <p class="note">
+      注意：请将视频文件命名为sample1.mp4至sample27.mp4并放在public目录下，每个标签页需要9个视频文件。悬停进度条预览功能需要提供缩略图VTT文件，您可以将thumbnails.vtt文件放在public目录下，或者使用在线VTT文件URL替换配置中的路径。
+    </p>
   </div>
 </template>
 
@@ -111,15 +98,12 @@ const initPlayerInstances = (tabKey) => {
               'play',
               'progress',
               'current-time',
-              'mute',
-              'volume',
-              'captions',
               'settings',
-              'fullscreen',
+              'fullscreen'
             ],
-            tooltips:{seek:true, controls: true},
-            previewThumbnails:{enabled:true, src:'/public/thumbnails.vtt'},
-            markers:{enabled:true, points: [ { time: 20, label: '第20秒' }]}
+            tooltips: { seek: true },
+            previewThumbnails: { enabled: true, src: '/public/thumbnails.vtt' },
+            markers: { enabled: true, points: [{ time: 20, label: 'aaaa' }] }
           };
 
           // 创建VideoPlayer实例

@@ -8,6 +8,7 @@ import LifecycleView from '../views/LifecycleView.vue'
 import DirectiveView from '../views/DirectiveView.vue'
 import DynamicComponentView from '../views/DynamicComponentView.vue'
 import PlyrView from '../views/PlyrView.vue'
+import XgplayerView from '../views/XgplayerView.vue'
 
 const routes = [
   { path: '/', name: 'home', component: HomeView },
@@ -18,7 +19,8 @@ const routes = [
   { path: '/lifecycle', name: 'lifecycle', component: LifecycleView },
   { path: '/directive', name: 'directive', component: DirectiveView },
   { path: '/dynamic-component', name: 'dynamic-component', component: DynamicComponentView },
-  { path: '/plyr', name: 'plyr', component: PlyrView }
+  { path: '/plyr', name: 'plyr', component: PlyrView },
+  { path: '/xgplayer', name: 'xgplayer', component: XgplayerView }
 ]
 
 const router = createRouter({

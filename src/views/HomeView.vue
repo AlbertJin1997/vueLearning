@@ -10,12 +10,15 @@
       <li>组合式API</li>
       <li>响应式数据</li>
       <li>Pinia状态管理</li>
+      <li>视频播放器</li>
     </ul>
     <div class="demo-links">
       <router-link to="/components">组件演示</router-link>
       <router-link to="/composition-api">组合式API</router-link>
       <router-link to="/reactive">响应式数据</router-link>
       <router-link to="/pinia">状态管理</router-link>
+      <router-link to="/plyr">Plyr播放器</router-link>
+      <router-link to="/xgplayer">西瓜播放器</router-link>
     </div>
   </div>
 </template>
