@@ -19,6 +19,7 @@ export class VideoPlayer {
         update: false,
         language: 'auto'
       },
+      ratio: '16:9',
       invertTime: false,
       Storage: {
         enabled: true,

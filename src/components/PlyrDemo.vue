@@ -1,49 +1,57 @@
 <template>
+
   <div class="plyr-demo-container">
-    <h2>Plyr 多视频播放器演示</h2>
-    <Tabs v-model:activeKey="activeTabKey" @change="handleTabChange">
-      <TabPane key="tab1" tab="视频列表1">
-        <div class="video-grid">
-          <div v-for="(video, index) in videoLists.tab1" :key="index" class="video-item">
-            <video :ref="el => setVideoRef('tab1', index, el)" class="plyr__video-player" controls preload="none">
-              <source :src="video.src" :type="video.type" />
-            </video>
+    <button @click="showModal = true">打开弹窗</button>
+    <modal v-model:open="showModal" @ok="handleOk" @cancel="showModal = false" :centered="true" width="80%"
+      max-width="1200px" max-height="800px">
+      <h2>Plyr 多视频播放器演示</h2>
+      <Tabs v-model:activeKey="activeTabKey" @change="handleTabChange">
+        <TabPane key="tab1" tab="视频列表1">
+          <div class="video-grid">
+            <div v-for="(video, index) in videoLists.tab1" :key="index" class="video-item">
+              <video :ref="el => setVideoRef('tab1', index, el)" class="plyr__video-player" controls preload="none">
+                <source :src="video.src" :type="video.type" />
+              </video>
+            </div>
           </div>
-        </div>
-      </TabPane>
-      <TabPane key="tab2" tab="视频列表2">
-        <div class="video-grid">
-          <div v-for="(video, index) in videoLists.tab2" :key="index" class="video-item">
-            <video :ref="el => setVideoRef('tab2', index, el)" class="plyr__video-player" controls preload="none">
-              <source :src="video.src" :type="video.type" />
-            </video>
+        </TabPane>
+        <TabPane key="tab2" tab="视频列表2">
+          <div class="video-grid">
+            <div v-for="(video, index) in videoLists.tab2" :key="index" class="video-item">
+              <video :ref="el => setVideoRef('tab2', index, el)" class="plyr__video-player" controls preload="none">
+                <source :src="video.src" :type="video.type" />
+              </video>
+            </div>
           </div>
-        </div>
-      </TabPane>
-      <TabPane key="tab3" tab="视频列表3">
-        <div class="video-grid">
-          <div v-for="(video, index) in videoLists.tab3" :key="index" class="video-item">
-            <video :ref="el => setVideoRef('tab3', index, el)" class="plyr__video-player" controls preload="none">
-              <source :src="video.src" :type="video.type" />
-            </video>
+        </TabPane>
+        <TabPane key="tab3" tab="视频列表3">
+          <div class="video-grid">
+            <div v-for="(video, index) in videoLists.tab3" :key="index" class="video-item">
+              <video :ref="el => setVideoRef('tab3', index, el)" class="plyr__video-player" controls preload="none">
+                <source :src="video.src" :type="video.type" />
+              </video>
+            </div>
           </div>
-        </div>
-      </TabPane>
-    </Tabs>
-    <p class="note">
-      注意：请将视频文件命名为sample1.mp4至sample27.mp4并放在public目录下，每个标签页需要9个视频文件。悬停进度条预览功能需要提供缩略图VTT文件，您可以将thumbnails.vtt文件放在public目录下，或者使用在线VTT文件URL替换配置中的路径。
-    </p>
+        </TabPane>
+      </Tabs>
+    </modal>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted, onUnmounted, watch } from 'vue';
 import 'plyr/dist/plyr.css';
-import { Tabs, TabPane } from 'ant-design-vue';
+import { Tabs, TabPane, Modal } from 'ant-design-vue';
 import { VideoPlayer } from '../utils/VideoPlayer';
 
 // 激活的标签页键
 const activeTabKey = ref('tab1');
+const showModal = ref(false)
+
+const handleOk = (e) => {
+  console.log(e);
+  showModal.value = false;
+};
 
 // 视频数据源 - 三个标签页，每个标签页9个视频
 const videoLists = {
@@ -229,6 +237,7 @@ h2 {
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  aspect-ratio: 16 / 9;
 }
 
 /* 确保 Plyr 控件样式正确 */
