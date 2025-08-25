@@ -110,30 +110,46 @@ const initPlayerInstances = (tabKey) => {
           // 创建VideoPlayer实例
           playerInstances.value[tabKey][index] = new VideoPlayer(videoEl, options);
           playerInstances.value[tabKey][index].init().then((player) => {
-            //获取静音按钮
-
+            // 获取静音按钮
             const muteButton = player.elements.buttons.mute;
             muteButton.style.transform = 'rotate(90deg)';
+
+            // 获取音量滑块
             const volumeSlideBar = player.elements.inputs.volume;
             volumeSlideBar.style.display = 'none';
-            console.log(volumeSlideBar)
-            //确保静音按钮有相对定位
-            const newButton = muteButton.cloneNode(true); // 克隆按钮（不包含事件监听器）
+
+            // 克隆静音按钮（不包含事件监听器）
+            const newButton = muteButton.cloneNode(true);
             muteButton.parentNode.replaceChild(newButton, muteButton);
 
-            // （可选）为新按钮添加自定义点击逻辑
+            // 为新按钮添加点击逻辑 - 切换静音状态
             newButton.addEventListener('click', (e) => {
               e.preventDefault();
-              volumeSlideBar.style.display = volumeSlideBar.style.display === 'none' ? 'block' : 'none'
-
-            });
-
-            //拦截静音按钮点击事件
-            muteButton.addEventListener('click', (e) => {
-
               e.stopPropagation();
-
+              // 切换音量滑块显示状态
+              volumeSlideBar.style.display = volumeSlideBar.style.display === 'none' ? 'block' : 'none';
             });
+
+            // 监听音量变化事件，更新按钮图标
+            player.on('volumechange', () => {
+              // 获取按钮中的两个图标
+              const mutedIcon = newButton.querySelector('.icon--pressed');
+              const volumeIcon = newButton.querySelector('.icon--not-pressed');
+
+              if (player.muted || player.volume === 0) {
+                // 静音状态 - 显示静音图标
+                mutedIcon.style.display = 'block';
+                volumeIcon.style.display = 'none';
+                newButton.setAttribute('aria-pressed', 'true');
+              } else {
+                // 非静音状态 - 显示音量图标
+                mutedIcon.style.display = 'none';
+                volumeIcon.style.display = 'block';
+                newButton.setAttribute('aria-pressed', 'false');
+              }
+            });
+
+
 
             console.log('Player initialized successfully', muteButton);
           }).catch(err => {
