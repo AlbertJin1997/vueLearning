@@ -1,15 +1,15 @@
 <template>
-
+  <button @click="showModal = true">打开弹窗</button>
   <div class="plyr-demo-container">
-    <button @click="showModal = true">打开弹窗</button>
-    <modal v-model:open="showModal" @ok="handleOk" @cancel="showModal = false" :centered="true" width="80%"
+    <Modal v-model:open="showModal" :footer="null" @cancel="showModal = false" :centered="true" width="80%"
       max-width="1200px" max-height="800px">
       <h2>Plyr 多视频播放器演示</h2>
       <Tabs v-model:activeKey="activeTabKey" @change="handleTabChange">
         <TabPane key="tab1" tab="视频列表1">
           <div class="video-grid">
             <div v-for="(video, index) in videoLists.tab1" :key="index" class="video-item">
-              <video :ref="el => setVideoRef('tab1', index, el)" class="plyr__video-player" controls preload="none">
+              <video :ref="el => setVideoRef('tab1', index, el)" class="plyr__video-player" controls preload="none"
+                data-poster="../../public/test1.png">
                 <source :src="video.src" :type="video.type" />
               </video>
             </div>
@@ -34,7 +34,7 @@
           </div>
         </TabPane>
       </Tabs>
-    </modal>
+    </Modal>
   </div>
 </template>
 
@@ -49,13 +49,12 @@ const activeTabKey = ref('tab1');
 const showModal = ref(false)
 
 const handleOk = (e) => {
-  console.log(e);
   showModal.value = false;
 };
 
 // 视频数据源 - 三个标签页，每个标签页9个视频
 const videoLists = {
-  tab1: Array.from({ length: 9 }, (_, i) => ({
+  tab1: Array.from({ length: 19 }, (_, i) => ({
     src: `http://s2.pstatp.com/cdn/expire-1-M/byted-player-videos/1.0.0/xgplayer-demo.mp4`,
     type: 'video/mp4'
   })),
@@ -112,7 +111,10 @@ const initPlayerInstances = (tabKey) => {
             ],
             tooltips: { seek: true },
             previewThumbnails: { enabled: true, src: '/public/thumbnails.vtt' },
-            markers: { enabled: true, points: [{ time: 20, label: 'aaaa' }] }
+            markers: { enabled: true, points: [{ time: 20, label: 'aaaa' }] },
+            style: {
+              '--plyr-color-main': 'grey'
+            }
           };
 
           // 创建VideoPlayer实例
@@ -157,9 +159,7 @@ const initPlayerInstances = (tabKey) => {
               }
             });
 
-
-
-            console.log('Player initialized successfully', muteButton);
+            console.log('Player initialized successfully');
           }).catch(err => {
             console.error('Failed to initialize player:', err);
           });
@@ -176,10 +176,15 @@ const handleTabChange = (key) => {
   initPlayerInstances(key);
 };
 
-// 组件挂载时初始化当前激活标签页的播放器实例
-onMounted(() => {
-  initPlayerInstances(activeTabKey.value);
+// 组件挂载时初始化当前激活标签页的播放器实     onMounted(() => {
+// 监听弹窗显示状态变化
+watch(showModal, (newVal) => {
+  if (newVal) {
+    // 弹窗显示时初始化当前激活标签页的播放器
+    initPlayerInstances(activeTabKey.value);
+  }
 });
+
 
 // 组件卸载时销毁所有播放器实例
 onUnmounted(() => {
@@ -203,6 +208,20 @@ onUnmounted(() => {
   max-width: 1200px;
   margin: 0 auto;
   padding: 24px;
+  background-color: #f9f9f9;
+}
+
+/* 确保Modal内容不会整体滚动，而是让tab内容独立滚动 */
+:deep(.ant-modal-content) {
+  background-color: red !important;
+  max-height: 800px !important;
+}
+
+/* 为tab内容区域添加滚动功能 */
+:deep(.ant-tabs-content) {
+  max-height: 600px !important;
+  overflow-y: auto;
+  padding-top: 16px;
 }
 
 h2 {

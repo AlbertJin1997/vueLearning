@@ -16,6 +16,12 @@
   -webkit-text-size-adjust: 100%;
 }
 
+/* Modal弹窗内容区域样式 */
+.ant-modal-content {
+  background-color: white !important;
+  max-height: 800px !important;
+}
+
 p
 
 /* 旋转静音/音量按钮90度 */
