@@ -6,59 +6,12 @@
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
   background-color: #242424;
-  --plyr-color-main: #f18f35;
-  --plyr-font-size-menu: 10px;
-
-  font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
 }
 
-/* Modal弹窗内容区域样式 */
-.ant-modal-content {
-  background-color: white !important;
-  max-height: 800px !important;
-}
-
-p
-
-/* 旋转静音/音量按钮90度 */
-/* 匹配实际类名：.plyr__control 和 .plyr__control--pressed，以及 data-plyr="mute" */
-.plyr__control.plyr__control--pressed[data-plyr="mute"] {
-  transform: rotate(0deg);
-  /* 旋转90度 */
-  /* 补充必要样式，确保旋转后显示正常 */
-  display: inline-block;
-  /* 确保旋转生效（inline元素可能不支持transform） */
-  transform-origin: center;
-  /* 以中心为旋转原点 */
-}
-
-.plyr__controls__item.plyr__volume {
-  /* 核心：旋转90度（-90度为向上，90度为向下） */
-  transform: rotate(-90deg);
-  /* 设置旋转原点为左上角 */
-  transform-origin: 0 0;
-
-  /* 调整宽度和高度以匹配旋转后的视觉尺寸 */
-  width: 30px;
-  /* 旋转后视觉上的高度 */
-  height: 30px;
-  /* 旋转后视觉上的宽度 */
-
-  /* 调整位置 */
-  left: 0;
-  top: 30px;
-  /* 将旋转后的控件向上移动其宽度的距离 */
-
-  /* 解决flex布局中宽度不变的问题 */
-  /* 1. 可以使用绝对定位脱离文档流 */
-  position: relative;
-  /* 2. 或者设置flex-shrink: 0防止收缩 */
-  flex-shrink: 0;
-}
 
 a {
   font-weight: 500;
@@ -118,24 +71,7 @@ button:focus-visible {
   padding: 2em;
 }
 
-.plyr__menu__container [role=menu] {
-  padding: 1px !important;
-}
 
-/* 音量滑块样式 */
-input.volume-slider {
-  /* 基础样式 */
-  -webkit-appearance: none;
-  appearance: none;
-  width: 80px;
-  height: 6px;
-  background: #ddd;
-  outline: none;
-  border-radius: 3px;
-  margin: 0;
-  padding: 0;
-  transform-origin: left center;
-}
 
 /* WebKit浏览器（Chrome、Safari、Edge）的滑块样式 */
 input.volume-slider::-webkit-slider-thumb {

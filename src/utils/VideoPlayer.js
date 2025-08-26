@@ -42,8 +42,8 @@ export class VideoPlayer {
         speed: '倍速',
         loop: '循环播放',
       },
-      tooltips: { seek: true },
       iconUrl: './src/assets/plyr.svg',
+      toggleInvert: false,
       previewThumbnails: {
         enabled: true,
         src: '/thumbnails.vtt'

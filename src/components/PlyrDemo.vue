@@ -1,33 +1,14 @@
 <template>
   <button @click="showModal = true">打开弹窗</button>
   <div class="plyr-demo-container">
-    <Modal v-model:open="showModal" :footer="null" @cancel="showModal = false" :centered="true" width="80%"
-      max-width="1200px" max-height="800px">
+    <Modal v-model:open="showModal" :footer="null" @cancel="showModal = false" :centered="true" width="1200px">
       <h2>Plyr 多视频播放器演示</h2>
       <Tabs v-model:activeKey="activeTabKey" @change="handleTabChange">
-        <TabPane key="tab1" tab="视频列表1">
+        <TabPane v-for="tab in tabConfig" :key="tab.key" :tab="tab.title">
           <div class="video-grid">
-            <div v-for="(video, index) in videoLists.tab1" :key="index" class="video-item">
-              <video :ref="el => setVideoRef('tab1', index, el)" class="plyr__video-player" controls preload="none"
-                data-poster="../../public/test1.png">
-                <source :src="video.src" :type="video.type" />
-              </video>
-            </div>
-          </div>
-        </TabPane>
-        <TabPane key="tab2" tab="视频列表2">
-          <div class="video-grid">
-            <div v-for="(video, index) in videoLists.tab2" :key="index" class="video-item">
-              <video :ref="el => setVideoRef('tab2', index, el)" class="plyr__video-player" controls preload="none">
-                <source :src="video.src" :type="video.type" />
-              </video>
-            </div>
-          </div>
-        </TabPane>
-        <TabPane key="tab3" tab="视频列表3">
-          <div class="video-grid">
-            <div v-for="(video, index) in videoLists.tab3" :key="index" class="video-item">
-              <video :ref="el => setVideoRef('tab3', index, el)" class="plyr__video-player" controls preload="none">
+            <div v-for="(video, index) in videoLists[tab.key]" :key="index" class="video-item">
+              <video :ref="el => setVideoRef(tab.key, index, el)" class="plyr__video-player" controls preload="none"
+                :data-poster="'../../public/test1.png'">
                 <source :src="video.src" :type="video.type" />
               </video>
             </div>
@@ -43,6 +24,7 @@ import { ref, onMounted, onUnmounted, watch } from 'vue';
 import 'plyr/dist/plyr.css';
 import { Tabs, TabPane, Modal } from 'ant-design-vue';
 import { VideoPlayer } from '../utils/VideoPlayer';
+import './video-player.css'
 
 // 激活的标签页键
 const activeTabKey = ref('tab1');
@@ -52,7 +34,14 @@ const handleOk = (e) => {
   showModal.value = false;
 };
 
-// 视频数据源 - 三个标签页，每个标签页9个视频
+// 标签页配置
+const tabConfig = [
+  { key: 'tab1', title: '视频列表1' },
+  { key: 'tab2', title: '视频列表2' },
+  { key: 'tab3', title: '视频列表3' }
+];
+
+// 视频数据源 - 三个标签页
 const videoLists = {
   tab1: Array.from({ length: 19 }, (_, i) => ({
     src: `http://s2.pstatp.com/cdn/expire-1-M/byted-player-videos/1.0.0/xgplayer-demo.mp4`,
@@ -82,6 +71,9 @@ const playerInstances = ref({
   tab3: []
 });
 
+// 当前正在播放的视频播放器引用
+let currentPlayingPlayer = null;
+
 // 设置视频引用的函数
 const setVideoRef = (tabKey, index, el) => {
   if (el) {
@@ -108,6 +100,7 @@ const initPlayerInstances = (tabKey) => {
               'volume',
               'settings',
               'fullscreen',
+              'seektime'
             ],
             tooltips: { seek: true },
             previewThumbnails: { enabled: true, src: '/public/thumbnails.vtt' },
@@ -127,6 +120,10 @@ const initPlayerInstances = (tabKey) => {
             // 获取音量滑块
             const volumeSlideBar = player.elements.inputs.volume;
             volumeSlideBar.style.display = 'none';
+            volumeSlideBar.style.background = 'grey';
+            volumeSlideBar.style.borderRadius = '2px'
+            volumeSlideBar.style.padding = '6px 6px';
+            volumeSlideBar.style.marginLeft = '0px'
 
             // 克隆静音按钮（不包含事件监听器）
             const newButton = muteButton.cloneNode(true);
@@ -156,6 +153,30 @@ const initPlayerInstances = (tabKey) => {
                 mutedIcon.style.display = 'none';
                 volumeIcon.style.display = 'block';
                 newButton.setAttribute('aria-pressed', 'false');
+              }
+            });
+
+            // 添加播放事件监听，实现全局只能播放一个视频
+            player.on('play', () => {
+              // 如果当前有正在播放的视频且不是当前视频，则暂停它
+              if (currentPlayingPlayer && currentPlayingPlayer !== player) {
+                currentPlayingPlayer.pause();
+              }
+              // 更新当前播放的视频引用
+              currentPlayingPlayer = player;
+            });
+
+            // 添加暂停事件监听，清除当前播放引用
+            player.on('pause', () => {
+              if (currentPlayingPlayer === player) {
+                currentPlayingPlayer = null;
+              }
+            });
+
+            // 添加结束事件监听，清除当前播放引用
+            player.on('ended', () => {
+              if (currentPlayingPlayer === player) {
+                currentPlayingPlayer = null;
               }
             });
 
