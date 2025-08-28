@@ -2,7 +2,6 @@
   <div class="xgplayer-demo">
     <h2>西瓜视频播放器演示</h2>
     <div ref="playerContainer" class="player-container"></div>
-
     <div class="player-controls">
       <button @click="play">播放</button>
       <button @click="pause">暂停</button>

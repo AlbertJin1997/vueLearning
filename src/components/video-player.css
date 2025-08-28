@@ -2,26 +2,24 @@
   --plyr-color-main: #f18f35;
   --plyr-font-size-menu: 10px;
 
-  /* 悬停时间轴展示当前时间戳 不知道为啥seek=true没生效display 就强制展示了*/
   .plyr__tooltip {
     display: block !important;
   }
 
+  /* 悬停时间轴展示当前时间戳 */
   .plyr__preview-thumb {
     bottom: 10px;
   }
 }
 
+
+
 /* 旋转静音/音量按钮90度 */
 /* 匹配实际类名：.plyr__control 和 .plyr__control--pressed，以及 data-plyr="mute" */
 .plyr__control.plyr__control--pressed[data-plyr="mute"] {
   transform: rotate(0deg);
-  /* 旋转90度 */
-  /* 补充必要样式，确保旋转后显示正常 */
   display: inline-block;
-  /* 确保旋转生效（inline元素可能不支持transform） */
   transform-origin: center;
-  /* 以中心为旋转原点 */
 }
 
 .plyr__controls__item.plyr__volume {
@@ -44,8 +42,10 @@
   flex-shrink: 0;
 }
 
-/* Modal弹窗内容区域样式 */
-.ant-modal-content {
+/* Element Plus Dialog样式 */
+.el-dialog {
+  width: 90% !important;
+  max-width: 1000px !important;
   background-color: white !important;
 }
 

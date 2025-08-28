@@ -1,38 +1,40 @@
 <template>
   <button @click="showModal = true">打开弹窗</button>
-  <div class="plyr-demo-container">
-    <Modal v-model:open="showModal" :footer="null" @cancel="showModal = false" :centered="true" width="1200px">
-      <h2>Plyr 多视频播放器演示</h2>
-      <Tabs v-model:activeKey="activeTabKey" @change="handleTabChange">
-        <TabPane v-for="tab in tabConfig" :key="tab.key" :tab="tab.title">
-          <div class="video-grid">
-            <div v-for="(video, index) in videoLists[tab.key]" :key="index" class="video-item">
-              <video :ref="el => setVideoRef(tab.key, index, el)" class="plyr__video-player" controls preload="none"
-                :data-poster="'../../public/test1.png'">
-                <source :src="video.src" :type="video.type" />
-              </video>
-            </div>
+
+  <el-dialog v-model="showModal">
+    <el-tabs v-model="activeTabKey" type="card" @tab-click="handleTabChange">
+      <el-tab-pane v-for="tab in tabConfig" :name="tab.key" :key="tab.key" :label="tab.title">
+        <div class="video-grid">
+          <div v-for="(video, index) in videoLists[tab.key]" :key="index" class="video-item">
+            <video :ref="el => setVideoRef(tab.key, index, el)" class="plyr__video-player" controls preload="none"
+              :data-poster="'../../public/test1.png'">
+              <source :src="video.src" :type="video.type" />
+            </video>
           </div>
-        </TabPane>
-      </Tabs>
-    </Modal>
-  </div>
+        </div>
+      </el-tab-pane>
+    </el-tabs>
+    <template #footer>
+      <div class="video-dialog-footer">
+        <el-checkbox v-model="dontShowAgain" label="下次不再展示" size="large" style="margin-left: 10px;" />
+      </div>
+    </template>
+  </el-dialog>
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, watch } from 'vue';
+import { ref, onMounted, onUnmounted, watch, h } from 'vue';
 import 'plyr/dist/plyr.css';
-import { Tabs, TabPane, Modal } from 'ant-design-vue';
+import { ElDialog, ElTabs, ElTabPane } from 'element-plus';
 import { VideoPlayer } from '../utils/VideoPlayer';
 import './video-player.css'
 
-// 激活的标签页键
-const activeTabKey = ref('tab1');
-const showModal = ref(false)
+// 导入本地图片作为关闭图标
+const closeIcon = h('img', {
+  src: '/aaa.png',
+  style: { width: '16px', height: '16px' }
+});
 
-const handleOk = (e) => {
-  showModal.value = false;
-};
 
 // 标签页配置
 const tabConfig = [
@@ -40,6 +42,11 @@ const tabConfig = [
   { key: 'tab2', title: '视频列表2' },
   { key: 'tab3', title: '视频列表3' }
 ];
+
+// 激活的标签页键 - 设置默认值为第一个标签页
+const activeTabKey = ref(tabConfig[0].key);
+const showModal = ref(false)
+const dontShowAgain = ref(false)
 
 // 视频数据源 - 三个标签页
 const videoLists = {
@@ -191,18 +198,31 @@ const initPlayerInstances = (tabKey) => {
 };
 
 // 标签页切换处理函数
-const handleTabChange = (key) => {
-  activeTabKey.value = key;
+const handleTabChange = (tab) => {
+  // Extract the key string from the tab object
+  const tabKey = tabConfig[tab.index].key
+  activeTabKey.value = tabKey;
   // 初始化新切换到的标签页的播放器实例
-  initPlayerInstances(key);
+  initPlayerInstances(tabKey);
 };
 
-// 组件挂载时初始化当前激活标签页的播放器实     onMounted(() => {
+// 组件挂载时初始化当前激活标签页的播放器实例
+onMounted(() => {
+  // 可以在这里添加一些初始化逻辑
+});
+
 // 监听弹窗显示状态变化
 watch(showModal, (newVal) => {
   if (newVal) {
-    // 弹窗显示时初始化当前激活标签页的播放器
-    initPlayerInstances(activeTabKey.value);
+    // 确保activeTabKey有值
+    if (!activeTabKey.value) {
+      console.log('弹窗初始化')
+      activeTabKey.value = tabConfig[0].key;
+    }
+    // 等待DOM渲染完成后再初始化播放器
+    setTimeout(() => {
+      initPlayerInstances(activeTabKey.value);
+    }, 100);
   }
 });
 
@@ -232,14 +252,8 @@ onUnmounted(() => {
   background-color: #f9f9f9;
 }
 
-/* 确保Modal内容不会整体滚动，而是让tab内容独立滚动 */
-:deep(.ant-modal-content) {
-  background-color: red !important;
-  max-height: 800px !important;
-}
-
 /* 为tab内容区域添加滚动功能 */
-:deep(.ant-tabs-content) {
+:deep(.el-tabs__content) {
   max-height: 600px !important;
   overflow-y: auto;
   padding-top: 16px;
@@ -260,17 +274,24 @@ h2 {
 }
 
 /* 标签页样式调整 */
-:deep(.ant-tabs) {
+:deep(.el-tabs) {
   width: 100%;
 }
 
-:deep(.ant-tabs-tab) {
+:deep(.el-tabs__item) {
   font-size: 16px;
   padding: 12px 24px;
 }
 
-:deep(.ant-tabs-content) {
+:deep(.el-tabs__content) {
   padding-top: 16px;
+}
+
+/* 使用更具体的选择器路径并直接设置背景色 */
+:deep(.el-dialog__wrapper .el-dialog) {
+  --el-dialog-bg-color: red !important;
+  --el-bg-color: red !important;
+  background-color: red !important;
 }
 
 .video-item {
@@ -297,5 +318,9 @@ h2 {
   .video-grid {
     grid-template-columns: 1fr;
   }
+}
+
+.video-dialog-footer {
+  text-align: left;
 }
 </style>
