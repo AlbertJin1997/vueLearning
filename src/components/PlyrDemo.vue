@@ -1,11 +1,9 @@
 <template>
-  <button @click="showModal = true">打开弹窗</button>
-
-  <el-dialog v-model="showModal">
+  <el-dialog :model-value="visible" @update:model-value="handleModalClose">
     <el-tabs v-model="activeTabKey" type="card" @tab-click="handleTabChange">
-      <el-tab-pane v-for="tab in tabConfig" :name="tab.key" :key="tab.key" :label="tab.title">
+      <el-tab-pane v-for="tab in props.tabConfig" :name="tab.key" :key="tab.key" :label="tab.title">
         <div class="video-grid">
-          <div v-for="(video, index) in videoLists[tab.key]" :key="index" class="video-item">
+          <div v-for="(video, index) in props.videoLists[tab.key]" :key="index" class="video-item">
             <video :ref="el => setVideoRef(tab.key, index, el)" class="plyr__video-player" controls preload="none"
               :data-poster="'../../public/test1.png'">
               <source :src="video.src" :type="video.type" />
@@ -16,36 +14,64 @@
     </el-tabs>
     <template #footer>
       <div class="video-dialog-footer">
-        <el-checkbox v-model="dontShowAgain" label="下次不再展示" size="large" style="margin-left: 10px;" />
+        <el-checkbox v-model="dontShowAgain" label="下次不再展示" style="margin-left: 10px;" />
       </div>
     </template>
   </el-dialog>
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, watch, h } from 'vue';
+import { ref, onMounted, onUnmounted, watch, h, defineProps, defineEmits } from 'vue';
 import 'plyr/dist/plyr.css';
 import { ElDialog, ElTabs, ElTabPane } from 'element-plus';
 import { VideoPlayer } from '../utils/VideoPlayer';
 import './video-player.css'
-
-// 导入本地图片作为关闭图标
-const closeIcon = h('img', {
-  src: '/aaa.png',
-  style: { width: '16px', height: '16px' }
+// 定义props，允许外部控制弹窗显示
+const props = defineProps({
+  // 控制弹窗显示/隐藏的prop
+  visible: {
+    type: Boolean,
+    default: false
+  },
+  // 可选：传入默认选中的标签页
+  defaultTab: {
+    type: String,
+    default: ''
+  },
+  // 可选：自定义标签页配置
+  tabConfig: {
+    type: Array,
+    default: () => [
+      { key: 'tab1', title: '视频列表1' },
+      { key: 'tab2', title: '视频列表2' },
+      { key: 'tab3', title: '视频列表3' }
+    ]
+  },
+  // 可选：自定义视频数据源
+  videoLists: {
+    type: Object,
+    default: () => ({
+      tab1: Array.from({ length: 19 }, () => ({
+        src: `http://s2.pstatp.com/cdn/expire-1-M/byted-player-videos/1.0.0/xgplayer-demo.mp4`,
+        type: 'video/mp4'
+      })),
+      tab2: Array.from({ length: 9 }, (_, i) => ({
+        src: `/sample${i + 10}.mp4`,
+        type: 'video/mp4'
+      })),
+      tab3: Array.from({ length: 9 }, (_, i) => ({
+        src: `/sample${i + 19}.mp4`,
+        type: 'video/mp4'
+      }))
+    })
+  }
 });
 
+// 定义emits，用于向外部通知事件
+const emit = defineEmits(['update:visible', 'close', 'tab-change']);
 
-// 标签页配置
-const tabConfig = [
-  { key: 'tab1', title: '视频列表1' },
-  { key: 'tab2', title: '视频列表2' },
-  { key: 'tab3', title: '视频列表3' }
-];
-
-// 激活的标签页键 - 设置默认值为第一个标签页
-const activeTabKey = ref(tabConfig[0].key);
-const showModal = ref(false)
+// 激活的标签页键
+const activeTabKey = ref(props.defaultTab || props.tabConfig[0].key);
 const dontShowAgain = ref(false)
 
 // 视频数据源 - 三个标签页
@@ -200,10 +226,12 @@ const initPlayerInstances = (tabKey) => {
 // 标签页切换处理函数
 const handleTabChange = (tab) => {
   // Extract the key string from the tab object
-  const tabKey = tabConfig[tab.index].key
+  const tabKey = props.tabConfig[tab.index].key
   activeTabKey.value = tabKey;
   // 初始化新切换到的标签页的播放器实例
   initPlayerInstances(tabKey);
+  // 向外部通知标签页切换事件
+  emit('tab-change', tabKey);
 };
 
 // 组件挂载时初始化当前激活标签页的播放器实例
@@ -211,18 +239,30 @@ onMounted(() => {
   // 可以在这里添加一些初始化逻辑
 });
 
-// 监听弹窗显示状态变化
-watch(showModal, (newVal) => {
+// 处理弹窗关闭事件
+const handleModalClose = (value) => {
+  emit('update:visible', value);
+  emit('close', value);
+};
+
+// 监听visible prop变化
+watch(() => props.visible, (newVal) => {
   if (newVal) {
     // 确保activeTabKey有值
     if (!activeTabKey.value) {
-      console.log('弹窗初始化')
-      activeTabKey.value = tabConfig[0].key;
+      activeTabKey.value = props.defaultTab || props.tabConfig[0].key;
     }
     // 等待DOM渲染完成后再初始化播放器
     setTimeout(() => {
       initPlayerInstances(activeTabKey.value);
     }, 100);
+  }
+});
+
+// 监听tabConfig和defaultTab变化，更新activeTabKey
+watch(() => [props.tabConfig, props.defaultTab], () => {
+  if (props.defaultTab) {
+    activeTabKey.value = props.defaultTab;
   }
 });
 
@@ -254,7 +294,9 @@ onUnmounted(() => {
 
 /* 为tab内容区域添加滚动功能 */
 :deep(.el-tabs__content) {
-  max-height: 600px !important;
+  flex: 1;
+  max-height: 500px !important;
+  height: 500px !important;
   overflow-y: auto;
   padding-top: 16px;
 }
@@ -283,16 +325,28 @@ h2 {
   padding: 12px 24px;
 }
 
-:deep(.el-tabs__content) {
-  padding-top: 16px;
-}
-
-/* 使用更具体的选择器路径并直接设置背景色 */
+/* 使用更具体的选择器路径并直接设置背景色和固定高度 */
 :deep(.el-dialog__wrapper .el-dialog) {
   --el-dialog-bg-color: red !important;
   --el-bg-color: red !important;
   background-color: red !important;
+  min-height: 700px;
 }
+
+/* 固定对话框内容区域的高度 */
+:deep(.el-dialog__body) {
+  height: 600px;
+  overflow: hidden;
+  padding: 20px;
+}
+
+/* 固定标签页容器的高度 */
+:deep(.el-tabs) {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
 
 .video-item {
   border-radius: 8px;

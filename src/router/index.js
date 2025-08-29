@@ -9,6 +9,7 @@ import DirectiveView from '../views/DirectiveView.vue'
 import DynamicComponentView from '../views/DynamicComponentView.vue'
 import PlyrView from '../views/PlyrView.vue'
 import XgplayerView from '../views/XgplayerView.vue'
+import ExternalControlDemo from '../components/ExternalControlDemo.vue'
 
 const routes = [
   { path: '/', name: 'home', component: HomeView },
@@ -20,7 +21,8 @@ const routes = [
   { path: '/directive', name: 'directive', component: DirectiveView },
   { path: '/dynamic-component', name: 'dynamic-component', component: DynamicComponentView },
   { path: '/plyr', name: 'plyr', component: PlyrView },
-  { path: '/xgplayer', name: 'xgplayer', component: XgplayerView }
+  { path: '/xgplayer', name: 'xgplayer', component: XgplayerView },
+  { path: '/external-control', name: 'external-control', component: ExternalControlDemo }
 ]
 
 const router = createRouter({
